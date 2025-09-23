@@ -56,20 +56,20 @@ export function UserNav() {
             <CreditCard className="mr-2 h-4 w-4" />
             <span>Billing</span>
           </DropdownMenuItem>
-          <Link href="/settings" passHref>
-            <DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/settings">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
-            </DropdownMenuItem>
-          </Link>
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <Link href="/" passHref>
-          <DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
-          </DropdownMenuItem>
-        </Link>
+          </Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
