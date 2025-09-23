@@ -196,3 +196,46 @@ export const projects: Project[] = [
     ],
   },
 ];
+
+export type Team = {
+  id: string;
+  name: string;
+  description: string;
+  progress: number;
+  members: { name: string; avatar: string, role: string }[];
+}
+
+export const teams: Team[] = [
+    {
+        id: "TEAM-001",
+        name: "Core Platform",
+        description: "Responsible for the core infrastructure and backend services.",
+        progress: 80,
+        members: [
+            { name: "Jane Doe", avatar: PlaceHolderImages[0].imageUrl, role: "Team Lead" },
+            { name: "John Doe", avatar: PlaceHolderImages[2].imageUrl, role: "Backend Engineer" },
+            { name: "Bob Johnson", avatar: PlaceHolderImages[3].imageUrl, role: "DevOps Engineer" },
+        ]
+    },
+    {
+        id: "TEAM-002",
+        name: "Mobile Squad",
+        description: "Developing the next-generation mobile applications.",
+        progress: 45,
+        members: [
+            { name: "Alice Smith", avatar: PlaceHolderImages[1].imageUrl, role: "Team Lead" },
+            { name: "Charlie Brown", avatar: PlaceHolderImages[4].imageUrl, role: "iOS Developer" },
+            { name: "Jane Doe", avatar: PlaceHolderImages[0].imageUrl, role: "Android Developer" },
+        ]
+    },
+    {
+        id: "TEAM-003",
+        name: "Design System",
+        description: "Maintaining and evolving the company-wide design system.",
+        progress: 95,
+        members: [
+            { name: "John Doe", avatar: PlaceHolderImages[2].imageUrl, role: "Design Lead" },
+            { name: "Alice Smith", avatar: PlaceHolderImages[1].imageUrl, role: "UI/UX Designer" },
+        ]
+    }
+]
