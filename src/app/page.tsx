@@ -7,7 +7,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center items-center gap-4">
           <Logo className="h-10 w-10 text-primary" />
-          <h1 className="text-4xl font-bold text-foreground">TeamFlow</h1>
+          <h1 className="text-4xl font-bold text-foreground">TMS</h1>
         </div>
         <div className="bg-card/60 dark:bg-card/30 backdrop-blur-lg p-8 rounded-2xl shadow-2xl shadow-slate-300/10 dark:shadow-black/10 border border-border/20">
           <div className="text-center mb-6">
