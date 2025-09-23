@@ -130,3 +130,69 @@ export const tasks: Task[] = [
     status: 'To Do',
   },
 ];
+
+
+export type Project = {
+  id: string;
+  title: string;
+  brief: string;
+  role: 'Responsible' | 'Accountable' | 'Consulted' | 'Informed';
+  progress: number;
+  milestones: { title: string; completed: boolean }[];
+  owner: { name: string; avatar: string };
+  team: { name: string; avatar: string }[];
+};
+
+export const projects: Project[] = [
+  {
+    id: 'PROJ-001',
+    title: 'Phoenix',
+    brief: 'Re-engineering the core platform for scalability and performance.',
+    role: 'Accountable',
+    progress: 75,
+    milestones: [
+      { title: 'Phase 1: Discovery', completed: true },
+      { title: 'Phase 2: Architecture', completed: true },
+      { title: 'Phase 3: Development', completed: false },
+    ],
+    owner: { name: 'Jane Doe', avatar: PlaceHolderImages[0].imageUrl },
+    team: [
+      { name: 'John Doe', avatar: PlaceHolderImages[2].imageUrl },
+      { name: 'Alice Smith', avatar: PlaceHolderImages[1].imageUrl },
+      { name: 'Bob Johnson', avatar: PlaceHolderImages[3].imageUrl },
+    ],
+  },
+  {
+    id: 'PROJ-002',
+    title: 'Odyssey',
+    brief: 'Exploring new market opportunities with a mobile-first strategy.',
+    role: 'Responsible',
+    progress: 50,
+    milestones: [
+      { title: 'Market Research', completed: true },
+      { title: 'Prototype Design', completed: false },
+      { title: 'User Testing', completed: false },
+    ],
+    owner: { name: 'Alice Smith', avatar: PlaceHolderImages[1].imageUrl },
+    team: [
+      { name: 'Charlie Brown', avatar: PlaceHolderImages[4].imageUrl },
+      { name: 'Jane Doe', avatar: PlaceHolderImages[0].imageUrl },
+    ],
+  },
+  {
+    id: 'PROJ-003',
+    title: 'Helios',
+    brief: 'Internal tool for streamlining the customer support workflow.',
+    role: 'Consulted',
+    progress: 90,
+    milestones: [
+      { title: 'Initial Specs', completed: true },
+      { title: 'Beta Release', completed: true },
+      { title: 'Full Rollout', completed: true },
+    ],
+    owner: { name: 'Bob Johnson', avatar: PlaceHolderImages[3].imageUrl },
+    team: [
+      { name: 'John Doe', avatar: PlaceHolderImages[2].imageUrl },
+    ],
+  },
+];
