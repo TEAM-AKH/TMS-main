@@ -1,3 +1,4 @@
+
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export const stats = [
@@ -238,4 +239,66 @@ export const teams: Team[] = [
             { name: "Alice Smith", avatar: PlaceHolderImages[1].imageUrl, role: "UI/UX Designer" },
         ]
     }
-]
+];
+
+export type Message = {
+  id: string;
+  text: string;
+  sender: string;
+  avatar: string;
+};
+
+export type Conversation = {
+  id: string;
+  name: string;
+  avatar: string;
+  lastMessage: string;
+  type: 'direct' | 'group';
+  messages: Message[];
+};
+
+export const conversations: Conversation[] = [
+  {
+    id: 'CONV-001',
+    name: 'Alice Smith',
+    avatar: PlaceHolderImages[1].imageUrl,
+    lastMessage: 'Hey, did you see the latest designs?',
+    type: 'direct',
+    messages: [
+      { id: 'MSG-001', text: 'Hey, did you see the latest designs?', sender: 'Alice Smith', avatar: PlaceHolderImages[1].imageUrl },
+      { id: 'MSG-002', text: 'Yeah, they look great! Sending my feedback now.', sender: 'You', avatar: PlaceHolderImages[0].imageUrl },
+      { id: 'MSG-003', text: 'Perfect, thanks!', sender: 'Alice Smith', avatar: PlaceHolderImages[1].imageUrl },
+    ],
+  },
+  {
+    id: 'CONV-002',
+    name: 'Project Phoenix',
+    avatar: 'https://picsum.photos/seed/302/40/40',
+    lastMessage: "Let's sync up about the new API endpoints.",
+    type: 'group',
+    messages: [
+       { id: 'MSG-004', text: "Hey team, let's sync up about the new API endpoints.", sender: 'John Doe', avatar: PlaceHolderImages[2].imageUrl },
+       { id: 'MSG-005', text: "Sure, I've pushed my latest code.", sender: 'Jane Doe', avatar: PlaceHolderImages[0].imageUrl },
+    ],
+  },
+  {
+    id: 'CONV-003',
+    name: 'Bob Johnson',
+    avatar: PlaceHolderImages[3].imageUrl,
+    lastMessage: 'Can you review my PR for the DevOps pipeline?',
+    type: 'direct',
+    messages: [
+       { id: 'MSG-006', text: 'Can you review my PR for the DevOps pipeline?', sender: 'Bob Johnson', avatar: PlaceHolderImages[3].imageUrl },
+    ],
+  },
+  {
+    id: 'CONV-004',
+    name: 'Marketing Team',
+    avatar: 'https://picsum.photos/seed/304/40/40',
+    lastMessage: 'The new campaign is ready for launch!',
+    type: 'group',
+    messages: [
+        { id: 'MSG-007', text: 'The new campaign is ready for launch!', sender: 'Charlie Brown', avatar: PlaceHolderImages[4].imageUrl },
+    ],
+  },
+];

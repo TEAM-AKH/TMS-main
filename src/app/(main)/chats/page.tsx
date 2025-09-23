@@ -1,8 +1,14 @@
+
+import ChatLayout from '@/components/chat/chat-layout';
+import { cookies } from 'next/headers';
+
 export default function ChatsPage() {
+  const layout = cookies().get('react-resizable:chat-layout');
+  const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
+  
   return (
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Chats</h1>
-      <p className="text-muted-foreground">Communicate with your team here.</p>
+    <div className="h-[calc(100vh_-_120px)]">
+        <ChatLayout defaultLayout={defaultLayout} />
     </div>
   );
 }
