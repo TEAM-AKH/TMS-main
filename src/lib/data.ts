@@ -46,3 +46,87 @@ export const highPriorityTasks = [
     { title: "Deploy staging server update", project: "Apollo", priority: "High" },
     { title: "Review new marketing copy", project: "Odyssey", priority: "High" },
 ];
+
+export type Task = {
+  id: string;
+  title: string;
+  brief: string;
+  assignee: {
+    name: string;
+    avatar: string;
+  };
+  dueDate: string;
+  priority: 'High' | 'Medium' | 'Low';
+  tags: string[];
+  project: string;
+  status: 'To Do' | 'In Progress' | 'Done' | 'Blocked';
+};
+
+export const tasks: Task[] = [
+  {
+    id: 'TASK-8782',
+    title: "You can't compress the program without quantifying the open-source SSD pixel!",
+    brief: 'Try to calculate the EXE feed, maybe it will copy the open-source capacitor!',
+    assignee: { name: 'Jane Doe', avatar: PlaceHolderImages[0].imageUrl },
+    dueDate: '2024-08-15',
+    priority: 'Medium',
+    tags: ['documentation', 'bug'],
+    project: 'Phoenix',
+    status: 'To Do',
+  },
+  {
+    id: 'TASK-7878',
+    title: 'Try to calculate the EXE feed, maybe it will copy the open-source capacitor!',
+    brief: 'We need to bypass the neural TCP card!',
+    assignee: { name: 'John Doe', avatar: PlaceHolderImages[2].imageUrl },
+    dueDate: '2024-08-20',
+    priority: 'High',
+    tags: ['feature', 'refactor'],
+    project: 'Odyssey',
+    status: 'In Progress',
+  },
+  {
+    id: 'TASK-4567',
+    title: 'We need to bypass the neural TCP card!',
+    brief: 'The SAS interface is down, navigate the auxiliary driver so we can back up the PNG bandwidth!',
+    assignee: { name: 'Alice Smith', avatar: PlaceHolderImages[1].imageUrl },
+    dueDate: '2024-08-12',
+    priority: 'Low',
+    tags: ['bug'],
+    project: 'Helios',
+    status: 'Done',
+  },
+    {
+    id: 'TASK-2345',
+    title: 'The SAS interface is down, navigate the auxiliary driver so we can back up the PNG bandwidth!',
+    brief: "You can't override the interface without backing up the redundant SMTP protocol!",
+    assignee: { name: 'Bob Johnson', avatar: PlaceHolderImages[3].imageUrl },
+    dueDate: '2024-08-25',
+    priority: 'High',
+    tags: ['testing'],
+    project: 'Apollo',
+    status: 'Blocked',
+  },
+  {
+    id: 'TASK-9876',
+    title: "I'll compress the bluetooth JSON firewall, that should driver the SMTP application!",
+    brief: "Use the cross-platform XML application, then you can generate the solid state monitor!",
+    assignee: { name: 'Jane Doe', avatar: PlaceHolderImages[0].imageUrl },
+    dueDate: '2024-09-01',
+    priority: 'Medium',
+    tags: ['documentation'],
+    project: 'Phoenix',
+    status: 'In Progress',
+  },
+    {
+    id: 'TASK-5432',
+    title: "Use the cross-platform XML application, then you can generate the solid state monitor!",
+    brief: "I'll connect the mobile JBOD card, that should transmitter the RSS sensor!",
+    assignee: { name: 'Charlie Brown', avatar: PlaceHolderImages[4].imageUrl },
+    dueDate: '2024-08-18',
+    priority: 'Low',
+    tags: ['feature'],
+    project: 'Juno',
+    status: 'To Do',
+  },
+];
