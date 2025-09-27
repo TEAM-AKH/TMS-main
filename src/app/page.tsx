@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -480,30 +481,39 @@ const TMSSplashScreen: React.FC = () => {
     const timer = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
+          clearInterval(timer);
           setCurrentPhase('complete');
           return 100;
         }
-        return prev + Math.random() * 10 + 5; // Increased speed
+        return prev + Math.random() * 15 + 5; 
       });
-    }, 100); // Faster interval
+    }, 100); 
 
     return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
+    let transitionTimer: NodeJS.Timeout;
+    let redirectTimer: NodeJS.Timeout;
+    
     if (currentPhase === 'complete') {
-      const timer = setTimeout(() => {
+      transitionTimer = setTimeout(() => {
         setCurrentPhase('transition');
-      }, 500); // Faster transition start
-      return () => clearTimeout(timer);
+      }, 500); 
     }
+    
     if (currentPhase === 'transition') {
-      const timer = setTimeout(() => {
+      redirectTimer = setTimeout(() => {
           router.push('/login');
-      }, 1000); // Transition animation duration
-      return () => clearTimeout(timer);
+      }, 1000); 
     }
+
+    return () => {
+      clearTimeout(transitionTimer);
+      clearTimeout(redirectTimer);
+    };
   }, [currentPhase, router]);
+
 
   const gradientClasses = isDarkMode 
     ? 'from-slate-900 via-blue-900 to-purple-900'
@@ -844,4 +854,5 @@ const TMSSplashScreen: React.FC = () => {
 };
 
 export default TMSSplashScreen;
+    
     
