@@ -624,97 +624,18 @@ const TMSSplashScreen: React.FC = () => {
                 className="w-full h-full"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                {/* Outer Ring */}
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="95"
-                  fill="none"
-                  stroke={isDarkMode ? "#4facfe" : "#8b5cf6"}
-                  strokeWidth="3"
-                  opacity="0.8"
-                />
-                
-                {/* Background Circle */}
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="85"
-                  fill={isDarkMode ? "#1e293b" : "#f8fafc"}
-                  opacity="0.95"
-                />
-                
-                {/* Inner Purple Circle */}
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="65"
-                  fill="#6366f1"
-                />
-                
-                {/* TMS Text - Curved around top */}
-                <path
-                  id="top-curve"
-                  d="M 35 100 A 65 65 0 0 1 165 100"
-                  fill="none"
-                />
-                <text className="fill-current text-gray-800 text-sm font-bold tracking-wider">
-                  <textPath href="#top-curve" startOffset="50%" textAnchor="middle">
-                    TEAM MANAGEMENT SYSTEM
-                  </textPath>
-                </text>
-                
-                {/* Central TMS Letters */}
-                <g transform="translate(100,100)">
-                  {/* T */}
-                  <text
-                    x="-25"
-                    y="5"
-                    className="fill-amber-400 text-2xl font-bold"
-                    textAnchor="middle"
-                  >
-                    T
-                  </text>
-                  
-                  {/* M */}
-                  <text
-                    x="0"
-                    y="5"
-                    className="fill-purple-300 text-2xl font-bold"
-                    textAnchor="middle"
-                  >
-                    M
-                  </text>
-                  
-                  {/* S */}
-                  <text
-                    x="25"
-                    y="5"
-                    className="fill-white text-2xl font-bold"
-                    textAnchor="middle"
-                  >
-                    S
-                  </text>
-                </g>
-                
-                {/* AKH Text - Bottom */}
+                <circle cx="100" cy="100" r="95" fill="none" stroke={isDarkMode ? 'hsl(217, 91%, 60%)' : 'hsl(262, 83%, 62%)'} strokeWidth="4" opacity="0.8"/>
+                <circle cx="100" cy="100" r="80" fill={isDarkMode ? 'hsl(224, 71%, 8%)' : '#fff'} />
                 <text
-                  x="100"
-                  y="175"
-                  className="fill-current text-gray-800 text-lg font-bold tracking-widest"
+                  x="50%"
+                  y="50%"
+                  dy=".3em"
                   textAnchor="middle"
+                  className="fill-current font-bold text-5xl"
+                  style={{ fill: isDarkMode ? 'white' : 'black' }}
                 >
-                  AKH
+                  TMS
                 </text>
-                
-                {/* Gold accent at bottom */}
-                <path
-                  d="M 60 165 A 40 40 0 0 0 140 165"
-                  fill="none"
-                  stroke="#fbbf24"
-                  strokeWidth="2"
-                  opacity="0.8"
-                />
               </svg>
             </motion.div>
           </motion.div>
