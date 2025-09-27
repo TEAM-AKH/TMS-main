@@ -86,7 +86,7 @@ const TMSSplashScreen: React.FC = () => {
         newDots.push({
           x,
           y,
-          baseColor: isDarkMode ? `rgba(79, 172, 254, ${BASE_OPACITY_MAX})` : `rgba(139, 92, 246, ${BASE_OPACITY_MAX})`,
+          baseColor: isDarkMode ? `rgba(0, 242, 254, ${BASE_OPACITY_MAX})` : `rgba(142, 45, 226, ${BASE_OPACITY_MAX})`,
           targetOpacity: baseOpacity,
           currentOpacity: baseOpacity,
           opacitySpeed: (Math.random() * 0.005) + 0.002,
@@ -175,8 +175,8 @@ const TMSSplashScreen: React.FC = () => {
       dot.currentRadius = dot.baseRadius + interactionFactor * RADIUS_BOOST;
 
       const colorMatch = dot.baseColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
-      const r = colorMatch ? colorMatch[1] : '79';
-      const g = colorMatch ? colorMatch[2] : '172';
+      const r = colorMatch ? colorMatch[1] : '0';
+      const g = colorMatch ? colorMatch[2] : '242';
       const b = colorMatch ? colorMatch[3] : '254';
 
       ctx.beginPath();
@@ -189,6 +189,7 @@ const TMSSplashScreen: React.FC = () => {
   }, [GRID_CELL_SIZE, INTERACTION_RADIUS_SQ, OPACITY_BOOST, RADIUS_BOOST, BASE_OPACITY_MIN, BASE_OPACITY_MAX, BASE_RADIUS, INTERACTION_RADIUS]);
 
   useEffect(() => {
+    // Generate particles only on the client side
     setParticles(
       Array.from({ length: 12 }).map((_, i) => ({
         id: i,
@@ -196,7 +197,7 @@ const TMSSplashScreen: React.FC = () => {
         top: `${Math.random() * 100}%`,
       }))
     );
-
+    
     handleResize();
     const handleMouseLeave = () => {
       mousePositionRef.current = { x: null, y: null };
@@ -249,11 +250,11 @@ const TMSSplashScreen: React.FC = () => {
   }, [currentPhase, router]);
 
   const gradientClasses = isDarkMode 
-    ? 'from-slate-900 via-blue-900 to-purple-900'
+    ? 'from-[#1e3c72] to-[#2a5298]'
     : 'from-blue-50 via-purple-50 to-pink-50';
 
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
-  const accentColor = isDarkMode ? 'text-blue-400' : 'text-purple-600';
+  const accentColor = isDarkMode ? 'text-[#00f2fe]' : 'text-[#8e2de2]';
 
   return (
     <div className={`relative min-h-screen w-full overflow-hidden bg-gradient-to-br ${gradientClasses}`}>
@@ -261,14 +262,14 @@ const TMSSplashScreen: React.FC = () => {
       
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 z-0 pointer-events-none opacity-60" 
+        className="absolute inset-0 z-0 pointer-events-none opacity-40" 
       />
 
       <BGPattern 
         variant="dots" 
         mask="fade-center" 
         size={32} 
-        fill={isDarkMode ? 'rgba(79, 172, 254, 0.1)' : 'rgba(139, 92, 246, 0.1)'} 
+        fill={isDarkMode ? 'rgba(0, 242, 254, 0.1)' : 'rgba(142, 45, 226, 0.1)'} 
         className="opacity-30"
       />
 
@@ -276,7 +277,7 @@ const TMSSplashScreen: React.FC = () => {
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
-            className={`absolute w-1 h-1 ${isDarkMode ? 'bg-blue-400' : 'bg-purple-500'} rounded-full`}
+            className={`absolute w-1 h-1 ${isDarkMode ? 'bg-[#00f2fe]' : 'bg-[#8e2de2]'} rounded-full`}
             style={{
               left: particle.left,
               top: particle.top,
@@ -299,7 +300,7 @@ const TMSSplashScreen: React.FC = () => {
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className={`absolute top-1/2 left-0 w-full h-px ${isDarkMode ? 'bg-blue-400' : 'bg-purple-500'} opacity-30`}
+          className={`absolute top-1/2 left-0 w-full h-px ${isDarkMode ? 'bg-[#00f2fe]' : 'bg-[#8e2de2]'} opacity-30`}
           animate={{
             x: ['-100%', '100%'],
           }}
@@ -309,8 +310,8 @@ const TMSSplashScreen: React.FC = () => {
             ease: "linear",
           }}
           style={{
-            background: `linear-gradient(90deg, transparent, ${isDarkMode ? '#4facfe' : '#8b5cf6'}, transparent)`,
-            height: '2px',
+            background: `linear-gradient(90deg, transparent, ${isDarkMode ? '#00f2fe' : '#8e2de2'}, transparent)`,
+            height: '1px',
             filter: 'blur(1px)',
           }}
         />
@@ -345,104 +346,45 @@ const TMSSplashScreen: React.FC = () => {
             className="relative w-40 h-40 flex items-center justify-center"
             animate={{
               filter: [
-                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'})`,
-                `drop-shadow(0 0 50px ${isDarkMode ? 'rgba(79, 172, 254, 0.8)' : 'rgba(139, 92, 246, 0.8)'})`,
-                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'})`,
+                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(0, 242, 254, 0.4)' : 'rgba(142, 45, 226, 0.5)'})`,
+                `drop-shadow(0 0 50px ${isDarkMode ? 'rgba(0, 242, 254, 0.6)' : 'rgba(142, 45, 226, 0.7)'})`,
+                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(0, 242, 254, 0.4)' : 'rgba(142, 45, 226, 0.5)'})`,
               ],
             }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
           >
             <motion.div
               animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               className="w-full h-full"
             >
-              <svg
-                viewBox="0 0 200 200"
-                className="w-full h-full"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="95"
+              <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                <defs>
+                  <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor={isDarkMode ? '#00f2fe' : '#8e2de2'} />
+                    <stop offset="100%" stopColor={isDarkMode ? '#2ecc71' : '#a6c1ee'} />
+                  </linearGradient>
+                </defs>
+                <motion.circle 
+                  cx="50" cy="50" r="45" 
+                  stroke="url(#ring-gradient)"
+                  strokeWidth="2" 
                   fill="none"
-                  stroke={isDarkMode ? "#4facfe" : "#8b5cf6"}
-                  strokeWidth="3"
-                  opacity="0.8"
+                  initial={{ strokeDasharray: "0 283", rotate: -90 }}
+                  animate={{ strokeDasharray: "283 283" }}
+                  transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
                 />
-                
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="85"
-                  fill={isDarkMode ? "#1e293b" : "#f8fafc"}
-                  opacity="0.95"
-                />
-                
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="65"
-                  fill="#6366f1"
-                />
-                
-                <path
-                  id="top-curve"
-                  d="M 35 100 A 65 65 0 0 1 165 100"
-                  fill="none"
-                />
-                <text className="fill-current text-gray-800 text-sm font-bold tracking-wider">
-                  <textPath href="#top-curve" startOffset="50%" textAnchor="middle">
-                    TEAM MANAGEMENT SYSTEM
-                  </textPath>
-                </text>
-                
-                <g transform="translate(100,100)">
-                  <text
-                    x="-25"
-                    y="5"
-                    className="fill-amber-400 text-2xl font-bold"
-                    textAnchor="middle"
-                  >
-                    T
-                  </text>
-                  
-                  <text
-                    x="0"
-                    y="5"
-                    className="fill-purple-300 text-2xl font-bold"
-                    textAnchor="middle"
-                  >
-                    M
-                  </text>
-                  
-                  <text
-                    x="25"
-                    y="5"
-                    className="fill-white text-2xl font-bold"
-                    textAnchor="middle"
-                  >
-                    S
-                  </text>
-                </g>
-                
-                <text
-                  x="100"
-                  y="175"
-                  className="fill-current text-gray-800 text-lg font-bold tracking-widest"
-                  textAnchor="middle"
+                <motion.g
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  AKH
-                </text>
-                
-                <path
-                  d="M 60 165 A 40 40 0 0 0 140 165"
-                  fill="none"
-                  stroke="#fbbf24"
-                  strokeWidth="2"
-                  opacity="0.8"
-                />
+                  <circle cx="35" cy="40" r="8" fill={isDarkMode ? '#2ecc71' : '#8e2de2'} />
+                  <circle cx="65" cy="40" r="8" fill={isDarkMode ? '#00f2fe' : '#a6c1ee'}/>
+                  <circle cx="50" cy="65" r="8" fill={isDarkMode ? '#8e2de2' : '#3c3c3d'}/>
+                  <path d="M 38 45 L 48 60" stroke={isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'} strokeWidth="1.5" />
+                  <path d="M 62 45 L 52 60" stroke={isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'} strokeWidth="1.5" />
+                </motion.g>
               </svg>
             </motion.div>
           </motion.div>
@@ -456,10 +398,10 @@ const TMSSplashScreen: React.FC = () => {
         >
           <h1 className={`text-4xl md:text-6xl font-light ${textColor} mb-4`}>
             Welcome to{' '}
-            <span className={`font-bold ${accentColor}`}>TMS</span>
+            <span className={`font-bold ${accentColor} tracking-wide`}>TMS</span>
           </h1>
-          <p className={`text-xl md:text-2xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} font-light`}>
-            Team Management System
+          <p className={`text-sm md:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} font-light uppercase tracking-widest`}>
+            Smart Collaboration. Smarter Management.
           </p>
         </motion.div>
 
@@ -467,70 +409,52 @@ const TMSSplashScreen: React.FC = () => {
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="w-full max-w-md"
+          className="w-full max-w-sm"
         >
-          <div className={`relative h-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} rounded-full overflow-hidden mb-4`}>
+          <div className="relative h-2 bg-black/20 rounded-full overflow-hidden mb-4">
             <motion.div
-              className={`absolute top-0 left-0 h-full ${isDarkMode ? 'bg-gradient-to-r from-blue-400 to-purple-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'} rounded-full`}
+              className={`absolute top-0 left-0 h-full rounded-full`}
               initial={{ width: '0%' }}
               animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              transition={{ duration: 0.3, ease: "linear" }}
               style={{
-                boxShadow: `0 0 10px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'}`,
+                background: `linear-gradient(90deg, ${isDarkMode ? '#2ecc71' : '#8e2de2'}, ${isDarkMode ? '#00f2fe' : '#a6c1ee'})`,
+                boxShadow: `0 0 10px ${isDarkMode ? 'rgba(0, 242, 254, 0.5)' : 'rgba(142, 45, 226, 0.5)'}`,
               }}
             />
           </div>
           
           <div className="flex justify-between items-center">
-            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {currentPhase === 'loading' ? 'Loading...' : 'Complete!'}
-            </span>
+            <AnimatePresence mode="wait">
+              {currentPhase === 'loading' && (
+                <motion.span
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                >
+                  Initializing workspace...
+                </motion.span>
+              )}
+              {currentPhase === 'complete' && (
+                <motion.span
+                  key="complete"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={`text-xs font-medium ${accentColor}`}
+                >
+                  Ready to launch!
+                </motion.span>
+              )}
+            </AnimatePresence>
             <span className={`text-sm font-mono ${accentColor}`}>
               {Math.round(progress)}%
             </span>
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.9 }}
-          className="mt-8"
-        >
-          <WeaveSpinner />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-          className="mt-6 text-center"
-        >
-          <AnimatePresence mode="wait">
-            {currentPhase === 'loading' && (
-              <motion.p
-                key="loading"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
-              >
-                Initializing your workspace...
-              </motion.p>
-            )}
-            {currentPhase === 'complete' && (
-              <motion.p
-                key="complete"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className={`text-sm ${accentColor} font-medium`}
-              >
-                Ready to manage your team!
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </motion.div>
       </div>
 
       <AnimatePresence>
@@ -539,16 +463,9 @@ const TMSSplashScreen: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center"
+            transition={{duration: 0.5}}
+            className="absolute inset-0 z-50 bg-background flex items-center justify-center"
           >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-center text-white"
-            >
-              <h2 className="text-3xl font-bold mb-4">Welcome!</h2>
-              <p className="text-lg opacity-90">Redirecting to your dashboard...</p>
-            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
