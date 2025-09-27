@@ -24,8 +24,7 @@ interface Particle {
 }
 
 const TMSSplashScreen: React.FC = () => {
-  const [progress, setProgress] = useState(0);
-  const [currentPhase, setCurrentPhase] = useState<'loading' | 'complete' | 'transition'>('loading');
+  const [currentPhase, setCurrentPhase] = useState<'loading' | 'transition'>('loading');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [particles, setParticles] = useState<Particle[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -191,7 +190,7 @@ const TMSSplashScreen: React.FC = () => {
   useEffect(() => {
     // Generate particles only on the client side
     setParticles(
-      Array.from({ length: 12 }).map((_, i) => ({
+      Array.from({ length: 12 }).map((i) => ({
         id: i,
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
@@ -220,31 +219,17 @@ const TMSSplashScreen: React.FC = () => {
   }, [handleResize, handleMouseMove, animateDots]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          setCurrentPhase('complete');
-          return 100;
-        }
-        return prev + Math.random() * 3 + 1;
-      });
-    }, 150);
-
-    return () => clearInterval(timer);
+      const timer = setTimeout(() => {
+        setCurrentPhase('transition');
+      }, 2000); // Wait for 2 seconds for initial animations
+      return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (currentPhase === 'complete') {
-      const timer = setTimeout(() => {
-        setCurrentPhase('transition');
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
     if (currentPhase === 'transition') {
         const timer = setTimeout(() => {
             router.push('/login');
-        }, 1000);
+        }, 1000); // Transition animation duration
         return () => clearTimeout(timer);
     }
   }, [currentPhase, router]);
@@ -403,56 +388,6 @@ const TMSSplashScreen: React.FC = () => {
           <p className={`text-sm md:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} font-light uppercase tracking-widest`}>
             Smart Collaboration. Smarter Management.
           </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="w-full max-w-sm"
-        >
-          <div className="relative h-2 bg-black/20 rounded-full overflow-hidden mb-4">
-            <motion.div
-              className={`absolute top-0 left-0 h-full rounded-full`}
-              initial={{ width: '0%' }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3, ease: "linear" }}
-              style={{
-                background: `linear-gradient(90deg, ${isDarkMode ? '#2ecc71' : '#8e2de2'}, ${isDarkMode ? '#00f2fe' : '#a6c1ee'})`,
-                boxShadow: `0 0 10px ${isDarkMode ? 'rgba(0, 242, 254, 0.5)' : 'rgba(142, 45, 226, 0.5)'}`,
-              }}
-            />
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <AnimatePresence mode="wait">
-              {currentPhase === 'loading' && (
-                <motion.span
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
-                >
-                  Initializing workspace...
-                </motion.span>
-              )}
-              {currentPhase === 'complete' && (
-                <motion.span
-                  key="complete"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className={`text-xs font-medium ${accentColor}`}
-                >
-                  Ready to launch!
-                </motion.span>
-              )}
-            </AnimatePresence>
-            <span className={`text-sm font-mono ${accentColor}`}>
-              {Math.round(progress)}%
-            </span>
-          </div>
         </motion.div>
 
       </div>
