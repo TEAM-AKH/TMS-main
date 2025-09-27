@@ -603,9 +603,39 @@ const TMSSplashScreen: React.FC = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="mb-8 w-40 h-40"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
-            <circle cx="250" cy="250" r="250" fill="white"/>
-            <path d="M106.1,380.3V119.7h50.3v102.5l75-102.5h57.9l-83.3,110.9l87.5,149.7h-60L185,286.9v93.4H106.1z M300.9,380.3V119.7h169.6v42.4H351.2v67.4h109.9v42.3H351.2v66.1h122.9v42.4H300.9z" fill="#007bff"/>
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="grainy" x="0" y="0" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+                <feComposite operator="in" in2="SourceGraphic"/>
+              </filter>
+              <path id="top-curve" d="M 50 100 A 50 50 0 0 1 150 100" />
+              <path id="bottom-curve" d="M 50 100 A 50 50 0 0 0 150 100" />
+            </defs>
+            <g filter="url(#grainy)" opacity="0.8">
+              <circle cx="100" cy="100" r="100" fill="#4B0082" />
+              <circle cx="100" cy="100" r="85" fill="#403068" />
+              <path d="M18.8,123.4 A90 90 0 0 1 181.2 123.4" fill="none" stroke="#B8860B" strokeWidth="8" />
+              <circle cx="100" cy="100" r="90" fill="none" stroke="#403068" strokeWidth="6" />
+            </g>
+
+            <text fill="#B8860B" fontSize="18" fontWeight="bold" letterSpacing="2">
+              <textPath href="#top-curve" startOffset="50%" textAnchor="middle">
+                TEAM MANAGEMENT SYSTEM
+              </textPath>
+            </text>
+
+            <g transform="translate(100, 100)">
+              <text y="-5" textAnchor="middle" fontSize="40" fontWeight="bold" fill="#B8860B">T</text>
+              <text x="-18" y="30" textAnchor="middle" fontSize="60" fontWeight="bold" fill="#6A5ACD" stroke="#000" strokeWidth="2">M</text>
+              <text x="18" y="30" textAnchor="middle" fontSize="60" fontWeight="bold" fill="#6A5ACD" stroke="#000" strokeWidth="2">S</text>
+            </g>
+
+            <text fill="#B8860B" fontSize="24" fontWeight="bold" letterSpacing="4">
+              <textPath href="#bottom-curve" startOffset="50%" textAnchor="middle">
+                AKH
+              </textPath>
+            </text>
           </svg>
         </motion.div>
 
