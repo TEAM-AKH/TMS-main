@@ -1,10 +1,10 @@
-
-"use client";
+'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 interface Dot {
     x: number;
@@ -15,12 +15,6 @@ interface Dot {
     opacitySpeed: number;
     baseRadius: number;
     currentRadius: number;
-}
-
-interface Particle {
-  id: number;
-  left: string;
-  top: string;
 }
 
 const BGPattern: React.FC<{
@@ -279,6 +273,12 @@ const WeaveSpinner: React.FC = () => {
     </>
   );
 };
+
+interface Particle {
+  id: number;
+  left: string;
+  top: string;
+}
 
 const TMSSplashScreen: React.FC = () => {
   const [progress, setProgress] = useState(0);
@@ -619,24 +619,13 @@ const TMSSplashScreen: React.FC = () => {
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="w-full h-full"
             >
-              <svg
-                viewBox="0 0 200 200"
+               <Image
+                src="https://storage.googleapis.com/aai-web-samples/splash-logo.png"
+                width={200}
+                height={200}
+                alt="TMS Logo"
                 className="w-full h-full"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle cx="100" cy="100" r="95" fill="none" stroke={isDarkMode ? 'hsl(217, 91%, 60%)' : 'hsl(262, 83%, 62%)'} strokeWidth="4" opacity="0.8"/>
-                <circle cx="100" cy="100" r="80" fill={isDarkMode ? 'hsl(224, 71%, 8%)' : '#fff'} />
-                <text
-                  x="50%"
-                  y="50%"
-                  dy=".3em"
-                  textAnchor="middle"
-                  className="fill-current font-bold text-5xl"
-                  style={{ fill: isDarkMode ? 'white' : 'black' }}
-                >
-                  TMS
-                </text>
-              </svg>
+              />
             </motion.div>
           </motion.div>
         </motion.div>
