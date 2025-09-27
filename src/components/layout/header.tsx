@@ -13,8 +13,6 @@ export default function Header() {
                     <Bell className="h-5 w-5" />
                     <span className="sr-only">Notifications</span>
                 </Button>
-                <div className="h-8 w-px bg-border" />
-                <span className="font-semibold text-sm text-muted-foreground">Client Logo</span>
             </div>
         </header>
     );
