@@ -190,7 +190,7 @@ const TMSSplashScreen: React.FC = () => {
   useEffect(() => {
     // Generate particles only on the client side
     setParticles(
-      Array.from({ length: 12 }).map((i) => ({
+      Array.from({ length: 12 }).map((_, i) => ({
         id: i,
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
