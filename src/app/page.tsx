@@ -1,10 +1,10 @@
+
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import WeaveSpinner from '@/components/splash/weave-spinner';
-import BGPattern from '@/components/splash/bg-pattern';
+import { cn } from '@/lib/utils';
 
 interface Dot {
     x: number;
@@ -23,8 +23,266 @@ interface Particle {
   top: string;
 }
 
+const BGPattern: React.FC<{
+  variant?: 'dots' | 'grid';
+  mask?: 'fade-edges' | 'fade-center' | 'none';
+  size?: number;
+  fill?: string;
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({
+  variant = 'grid',
+  mask = 'none',
+  size = 24,
+  fill = '#252525',
+  className,
+  style,
+  ...props
+}) => {
+  const maskClasses = {
+    'fade-edges': '[mask-image:radial-gradient(ellipse_at_center,var(--background),transparent)]',
+    'fade-center': '[mask-image:radial-gradient(ellipse_at_center,transparent,var(--background))]',
+    'none': '',
+  };
+
+  const getBgImage = (variant: string, fill: string, size: number) => {
+    switch (variant) {
+      case 'dots':
+        return `radial-gradient(${fill} 1px, transparent 1px)`;
+      case 'grid':
+        return `linear-gradient(to right, ${fill} 1px, transparent 1px), linear-gradient(to bottom, ${fill} 1px, transparent 1px)`;
+      default:
+        return undefined;
+    }
+  };
+
+  const bgSize = `${size}px ${size}px`;
+  const backgroundImage = getBgImage(variant, fill, size);
+
+  return (
+    <div
+      className={cn('absolute inset-0 z-[-10] size-full', maskClasses[mask], className)}
+      style={{
+        backgroundImage,
+        backgroundSize: bgSize,
+        ...style,
+      }}
+      {...props}
+    />
+  );
+};
+
+const WeaveSpinner: React.FC = () => {
+  return (
+    <>
+      <style>
+        {`
+          .spinner-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .spinner-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            transform-style: preserve-3d;
+            perspective: 1200px;
+          }
+
+          .node {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #4facfe;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow:
+              0 0 15px #4facfe,
+              0 0 30px rgba(79, 172, 254, 0.6);
+            animation: nodePulse 1.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+          }
+
+          .thread {
+            position: absolute;
+            background: linear-gradient(
+              90deg,
+              transparent,
+              rgba(79, 172, 254, 0.8),
+              transparent
+            );
+            box-shadow: 0 0 8px rgba(79, 172, 254, 0.5);
+            transform-origin: center;
+          }
+
+          .t1 {
+            width: 100%;
+            height: 1px;
+            top: 30%;
+            left: 0;
+            animation: weave1 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+          }
+
+          .t2 {
+            width: 1px;
+            height: 100%;
+            top: 0;
+            left: 70%;
+            animation: weave2 2.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+          }
+
+          .t3 {
+            width: 100%;
+            height: 1px;
+            bottom: 30%;
+            left: 0;
+            animation: weave3 2.4s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+          }
+
+          .t4 {
+            width: 1px;
+            height: 100%;
+            top: 0;
+            left: 30%;
+            animation: weave4 2.6s cubic-bezier(0.36, 0, 0.66, -0.56) infinite;
+          }
+
+          @keyframes nodePulse {
+            0%, 100% {
+              transform: translate(-50%, -50%) scale(1);
+              box-shadow:
+                0 0 15px #4facfe,
+                0 0 30px rgba(79, 172, 254, 0.6);
+            }
+            50% {
+              transform: translate(-50%, -50%) scale(1.4);
+              box-shadow:
+                0 0 25px #4facfe,
+                0 0 50px rgba(79, 172, 254, 0.8);
+            }
+          }
+
+          @keyframes weave1 {
+            0% {
+              transform: translateY(0) rotateX(0deg) rotateZ(0deg);
+              opacity: 0.8;
+            }
+            50% {
+              transform: translateY(20px) rotateX(60deg) rotateZ(20deg);
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(0) rotateX(0deg) rotateZ(0deg);
+              opacity: 0.8;
+            }
+          }
+
+          @keyframes weave2 {
+            0% {
+              transform: translateX(0) rotateY(0deg) rotateZ(0deg);
+              opacity: 0.8;
+            }
+            50% {
+              transform: translateX(-20px) rotateY(60deg) rotateZ(-20deg);
+              opacity: 1;
+            }
+            100% {
+              transform: translateX(0) rotateY(0deg) rotateZ(0deg);
+              opacity: 0.8;
+            }
+          }
+
+          @keyframes weave3 {
+            0% {
+              transform: translateY(0) rotateX(0deg) rotateZ(0deg);
+              opacity: 0.8;
+            }
+            50% {
+              transform: translateY(-20px) rotateX(-60deg) rotateZ(15deg);
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(0) rotateX(0deg) rotateZ(0deg);
+              opacity: 0.8;
+            }
+          }
+
+          @keyframes weave4 {
+            0% {
+              transform: translateX(0) rotateY(0deg) rotateZ(0deg);
+              opacity: 0.8;
+            }
+            50% {
+              transform: translateX(20px) rotateY(-60deg) rotateZ(-15deg);
+              opacity: 1;
+            }
+            100% {
+              transform: translateX(0) rotateY(0deg) rotateZ(0deg);
+              opacity: 0.8;
+            }
+          }
+
+          @keyframes logoGlow {
+            0%, 100% {
+              filter: drop-shadow(0 0 20px rgba(79, 172, 254, 0.8));
+            }
+            50% {
+              filter: drop-shadow(0 0 40px rgba(79, 172, 254, 1));
+            }
+          }
+
+          @keyframes logoScale {
+            0%, 100% {
+              transform: scale(1);
+            }
+            50% {
+              transform: scale(1.1);
+            }
+          }
+
+          @keyframes progressGlow {
+            0% {
+              box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+            }
+            50% {
+              box-shadow: 0 0 20px rgba(79, 172, 254, 0.8);
+            }
+            100% {
+              box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+            }
+          }
+
+          @keyframes waveMove {
+            0% {
+              transform: translateX(-100%);
+            }
+            100% {
+              transform: translateX(100%);
+            }
+          }
+
+          @keyframes particleFloat {
+            0%, 100% {
+              transform: translateY(0px) rotate(0deg);
+              opacity: 0.7;
+            }
+            50% {
+              transform: translateY(-20px) rotate(180deg);
+              opacity: 1;
+            }
+          }
+        `}
+      </style>
+    </>
+  );
+};
+
 const TMSSplashScreen: React.FC = () => {
-  const [currentPhase, setCurrentPhase] = useState<'loading' | 'transition'>('loading');
+  const [progress, setProgress] = useState(0);
+  const [currentPhase, setCurrentPhase] = useState<'loading' | 'complete' | 'transition'>('loading');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [particles, setParticles] = useState<Particle[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,6 +292,7 @@ const TMSSplashScreen: React.FC = () => {
   const canvasSizeRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 });
   const mousePositionRef = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
   const router = useRouter();
+
 
   const DOT_SPACING = 30;
   const BASE_OPACITY_MIN = 0.2;
@@ -85,7 +344,7 @@ const TMSSplashScreen: React.FC = () => {
         newDots.push({
           x,
           y,
-          baseColor: isDarkMode ? `rgba(0, 242, 254, ${BASE_OPACITY_MAX})` : `rgba(142, 45, 226, ${BASE_OPACITY_MAX})`,
+          baseColor: isDarkMode ? `rgba(79, 172, 254, ${BASE_OPACITY_MAX})` : `rgba(139, 92, 246, ${BASE_OPACITY_MAX})`,
           targetOpacity: baseOpacity,
           currentOpacity: baseOpacity,
           opacitySpeed: (Math.random() * 0.005) + 0.002,
@@ -174,8 +433,8 @@ const TMSSplashScreen: React.FC = () => {
       dot.currentRadius = dot.baseRadius + interactionFactor * RADIUS_BOOST;
 
       const colorMatch = dot.baseColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
-      const r = colorMatch ? colorMatch[1] : '0';
-      const g = colorMatch ? colorMatch[2] : '242';
+      const r = colorMatch ? colorMatch[1] : '79';
+      const g = colorMatch ? colorMatch[2] : '172';
       const b = colorMatch ? colorMatch[3] : '254';
 
       ctx.beginPath();
@@ -185,7 +444,7 @@ const TMSSplashScreen: React.FC = () => {
     });
 
     animationFrameId.current = requestAnimationFrame(animateDots);
-  }, [GRID_CELL_SIZE, INTERACTION_RADIUS_SQ, OPACITY_BOOST, RADIUS_BOOST, BASE_OPACITY_MIN, BASE_OPACITY_MAX, BASE_RADIUS, INTERACTION_RADIUS]);
+  }, [GRID_CELL_SIZE, INTERACTION_RADIUS, INTERACTION_RADIUS_SQ, OPACITY_BOOST, RADIUS_BOOST, BASE_OPACITY_MIN, BASE_OPACITY_MAX, BASE_RADIUS]);
 
   useEffect(() => {
     // Generate particles only on the client side to prevent hydration mismatch
@@ -219,50 +478,66 @@ const TMSSplashScreen: React.FC = () => {
   }, [handleResize, handleMouseMove, animateDots]);
 
   useEffect(() => {
-      const timer = setTimeout(() => {
-        setCurrentPhase('transition');
-      }, 2000); // Wait for 2 seconds for initial animations
-      return () => clearTimeout(timer);
+    const timer = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          setCurrentPhase('complete');
+          return 100;
+        }
+        return prev + Math.random() * 3 + 1;
+      });
+    }, 150);
+
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
+    if (currentPhase === 'complete') {
+      const timer = setTimeout(() => {
+        setCurrentPhase('transition');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
     if (currentPhase === 'transition') {
-        const timer = setTimeout(() => {
-            router.push('/login');
-        }, 1000); // Transition animation duration
-        return () => clearTimeout(timer);
+      const timer = setTimeout(() => {
+          router.push('/login');
+      }, 1000); // Transition animation duration
+      return () => clearTimeout(timer);
     }
   }, [currentPhase, router]);
 
   const gradientClasses = isDarkMode 
-    ? 'from-[#1e3c72] to-[#2a5298]'
+    ? 'from-slate-900 via-blue-900 to-purple-900'
     : 'from-blue-50 via-purple-50 to-pink-50';
 
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
-  const accentColor = isDarkMode ? 'text-[#00f2fe]' : 'text-[#8e2de2]';
+  const accentColor = isDarkMode ? 'text-blue-400' : 'text-purple-600';
 
   return (
     <div className={`relative min-h-screen w-full overflow-hidden bg-gradient-to-br ${gradientClasses}`}>
       <WeaveSpinner />
       
+      {/* Interactive Dot Background */}
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 z-0 pointer-events-none opacity-40" 
+        className="absolute inset-0 z-0 pointer-events-none opacity-60" 
       />
 
+      {/* Background Pattern */}
       <BGPattern 
         variant="dots" 
         mask="fade-center" 
         size={32} 
-        fill={isDarkMode ? 'rgba(0, 242, 254, 0.1)' : 'rgba(142, 45, 226, 0.1)'} 
+        fill={isDarkMode ? 'rgba(79, 172, 254, 0.1)' : 'rgba(139, 92, 246, 0.1)'} 
         className="opacity-30"
       />
 
+      {/* Floating Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
-            className={`absolute w-1 h-1 ${isDarkMode ? 'bg-[#00f2fe]' : 'bg-[#8e2de2]'} rounded-full`}
+            className={`absolute w-1 h-1 ${isDarkMode ? 'bg-blue-400' : 'bg-purple-500'} rounded-full`}
             style={{
               left: particle.left,
               top: particle.top,
@@ -283,9 +558,10 @@ const TMSSplashScreen: React.FC = () => {
         ))}
       </div>
 
+      {/* Wave Animation */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className={`absolute top-1/2 left-0 w-full h-px ${isDarkMode ? 'bg-[#00f2fe]' : 'bg-[#8e2de2]'} opacity-30`}
+          className={`absolute top-1/2 left-0 w-full h-px ${isDarkMode ? 'bg-blue-400' : 'bg-purple-500'} opacity-30`}
           animate={{
             x: ['-100%', '100%'],
           }}
@@ -295,13 +571,14 @@ const TMSSplashScreen: React.FC = () => {
             ease: "linear",
           }}
           style={{
-            background: `linear-gradient(90deg, transparent, ${isDarkMode ? '#00f2fe' : '#8e2de2'}, transparent)`,
-            height: '1px',
+            background: `linear-gradient(90deg, transparent, ${isDarkMode ? '#4facfe' : '#8b5cf6'}, transparent)`,
+            height: '2px',
             filter: 'blur(1px)',
           }}
         />
       </div>
 
+      {/* Theme Toggle */}
       <motion.button
         onClick={() => setIsDarkMode(!isDarkMode)}
         className="absolute top-6 right-6 z-20 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300"
@@ -319,8 +596,10 @@ const TMSSplashScreen: React.FC = () => {
         )}
       </motion.button>
 
+      {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
         
+        {/* Logo Animation */}
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -331,50 +610,120 @@ const TMSSplashScreen: React.FC = () => {
             className="relative w-40 h-40 flex items-center justify-center"
             animate={{
               filter: [
-                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(0, 242, 254, 0.4)' : 'rgba(142, 45, 226, 0.5)'})`,
-                `drop-shadow(0 0 50px ${isDarkMode ? 'rgba(0, 242, 254, 0.6)' : 'rgba(142, 45, 226, 0.7)'})`,
-                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(0, 242, 254, 0.4)' : 'rgba(142, 45, 226, 0.5)'})`,
+                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'})`,
+                `drop-shadow(0 0 50px ${isDarkMode ? 'rgba(79, 172, 254, 0.8)' : 'rgba(139, 92, 246, 0.8)'})`,
+                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'})`,
               ],
             }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
             <motion.div
               animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="w-full h-full"
             >
-              <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                <defs>
-                  <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor={isDarkMode ? '#00f2fe' : '#8e2de2'} />
-                    <stop offset="100%" stopColor={isDarkMode ? '#2ecc71' : '#a6c1ee'} />
-                  </linearGradient>
-                </defs>
-                <motion.circle 
-                  cx="50" cy="50" r="45" 
-                  stroke="url(#ring-gradient)"
-                  strokeWidth="2" 
+              <svg
+                viewBox="0 0 200 200"
+                className="w-full h-full"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Outer Ring */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="95"
                   fill="none"
-                  initial={{ strokeDasharray: "0 283", rotate: -90 }}
-                  animate={{ strokeDasharray: "283 283" }}
-                  transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+                  stroke={isDarkMode ? "#4facfe" : "#8b5cf6"}
+                  strokeWidth="3"
+                  opacity="0.8"
                 />
-                <motion.g
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                
+                {/* Background Circle */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="85"
+                  fill={isDarkMode ? "#1e293b" : "#f8fafc"}
+                  opacity="0.95"
+                />
+                
+                {/* Inner Purple Circle */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="65"
+                  fill="#6366f1"
+                />
+                
+                {/* TMS Text - Curved around top */}
+                <path
+                  id="top-curve"
+                  d="M 35 100 A 65 65 0 0 1 165 100"
+                  fill="none"
+                />
+                <text className="fill-current text-gray-800 text-sm font-bold tracking-wider">
+                  <textPath href="#top-curve" startOffset="50%" textAnchor="middle">
+                    TEAM MANAGEMENT SYSTEM
+                  </textPath>
+                </text>
+                
+                {/* Central TMS Letters */}
+                <g transform="translate(100,100)">
+                  {/* T */}
+                  <text
+                    x="-25"
+                    y="5"
+                    className="fill-amber-400 text-2xl font-bold"
+                    textAnchor="middle"
+                  >
+                    T
+                  </text>
+                  
+                  {/* M */}
+                  <text
+                    x="0"
+                    y="5"
+                    className="fill-purple-300 text-2xl font-bold"
+                    textAnchor="middle"
+                  >
+                    M
+                  </text>
+                  
+                  {/* S */}
+                  <text
+                    x="25"
+                    y="5"
+                    className="fill-white text-2xl font-bold"
+                    textAnchor="middle"
+                  >
+                    S
+                  </text>
+                </g>
+                
+                {/* AKH Text - Bottom */}
+                <text
+                  x="100"
+                  y="175"
+                  className="fill-current text-gray-800 text-lg font-bold tracking-widest"
+                  textAnchor="middle"
                 >
-                  <circle cx="35" cy="40" r="8" fill={isDarkMode ? '#2ecc71' : '#8e2de2'} />
-                  <circle cx="65" cy="40" r="8" fill={isDarkMode ? '#00f2fe' : '#a6c1ee'}/>
-                  <circle cx="50" cy="65" r="8" fill={isDarkMode ? '#8e2de2' : '#3c3c3d'}/>
-                  <path d="M 38 45 L 48 60" stroke={isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'} strokeWidth="1.5" />
-                  <path d="M 62 45 L 52 60" stroke={isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'} strokeWidth="1.5" />
-                </motion.g>
+                  AKH
+                </text>
+                
+                {/* Gold accent at bottom */}
+                <path
+                  d="M 60 165 A 40 40 0 0 0 140 165"
+                  fill="none"
+                  stroke="#fbbf24"
+                  strokeWidth="2"
+                  opacity="0.8"
+                />
               </svg>
             </motion.div>
           </motion.div>
         </motion.div>
 
+        {/* Welcome Text */}
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -383,24 +732,111 @@ const TMSSplashScreen: React.FC = () => {
         >
           <h1 className={`text-4xl md:text-6xl font-light ${textColor} mb-4`}>
             Welcome to{' '}
-            <span className={`font-bold ${accentColor} tracking-wide`}>TMS</span>
+            <span className={`font-bold ${accentColor}`}>TMS</span>
           </h1>
-          <p className={`text-sm md:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} font-light uppercase tracking-widest`}>
-            Smart Collaboration. Smarter Management.
+          <p className={`text-xl md:text-2xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} font-light`}>
+            Team Management System
           </p>
         </motion.div>
 
+        {/* Loading Progress */}
+        <motion.div
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="w-full max-w-md"
+        >
+          <div className={`relative h-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} rounded-full overflow-hidden mb-4`}>
+            <motion.div
+              className={`absolute top-0 left-0 h-full ${isDarkMode ? 'bg-gradient-to-r from-blue-400 to-purple-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'} rounded-full`}
+              initial={{ width: '0%' }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              style={{
+                boxShadow: `0 0 10px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'}`,
+              }}
+            />
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {currentPhase === 'loading' ? 'Loading...' : 'Complete!'}
+            </span>
+            <span className={`text-sm font-mono ${accentColor}`}>
+              {Math.round(progress)}%
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Loading Spinner */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
+          className="mt-8"
+        >
+          <div className="spinner-wrapper">
+            <div className="spinner-container">
+              <div className="thread t1" />
+              <div className="thread t2" />
+              <div className="thread t3" />
+              <div className="thread t4" />
+              <div className="node" />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Status Text */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+          className="mt-6 text-center"
+        >
+          <AnimatePresence mode="wait">
+            {currentPhase === 'loading' && (
+              <motion.p
+                key="loading"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+              >
+                Initializing your workspace...
+              </motion.p>
+            )}
+            {currentPhase === 'complete' && (
+              <motion.p
+                key="complete"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className={`text-sm ${accentColor} font-medium`}
+              >
+                Ready to manage your team!
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
 
+      {/* Transition Overlay */}
       <AnimatePresence>
         {currentPhase === 'transition' && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{duration: 0.5}}
-            className="absolute inset-0 z-50 bg-background flex items-center justify-center"
+            className="absolute inset-0 z-50 bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center"
           >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-center text-white"
+            >
+              <h2 className="text-3xl font-bold mb-4">Welcome!</h2>
+              <p className="text-lg opacity-90">Redirecting to your dashboard...</p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -409,3 +845,5 @@ const TMSSplashScreen: React.FC = () => {
 };
 
 export default TMSSplashScreen;
+
+    
