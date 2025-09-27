@@ -605,8 +605,8 @@ const TMSSplashScreen: React.FC = () => {
         >
           <Image
             src="https://storage.googleapis.com/aai-web-samples/splash-logo.png"
-            width={200}
-            height={200}
+            width={160}
+            height={160}
             alt="TMS Logo"
             className="w-40 h-40"
           />
