@@ -603,31 +603,13 @@ const TMSSplashScreen: React.FC = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="mb-8"
         >
-          <motion.div
-            className="relative w-40 h-40 flex items-center justify-center"
-            animate={{
-              filter: [
-                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'})`,
-                `drop-shadow(0 0 50px ${isDarkMode ? 'rgba(79, 172, 254, 0.8)' : 'rgba(139, 92, 246, 0.8)'})`,
-                `drop-shadow(0 0 30px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'})`,
-              ],
-            }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="w-full h-full"
-            >
-               <Image
-                src="https://storage.googleapis.com/aai-web-samples/splash-logo.png"
-                width={200}
-                height={200}
-                alt="TMS Logo"
-                className="w-full h-full"
-              />
-            </motion.div>
-          </motion.div>
+          <Image
+            src="https://storage.googleapis.com/aai-web-samples/splash-logo.png"
+            width={200}
+            height={200}
+            alt="TMS Logo"
+            className="w-40 h-40"
+          />
         </motion.div>
 
         {/* Welcome Text */}
