@@ -188,7 +188,7 @@ const TMSSplashScreen: React.FC = () => {
   }, [GRID_CELL_SIZE, INTERACTION_RADIUS_SQ, OPACITY_BOOST, RADIUS_BOOST, BASE_OPACITY_MIN, BASE_OPACITY_MAX, BASE_RADIUS, INTERACTION_RADIUS]);
 
   useEffect(() => {
-    // Generate particles only on the client side
+    // Generate particles only on the client side to prevent hydration mismatch
     setParticles(
       Array.from({ length: 12 }).map((_, i) => ({
         id: i,
