@@ -487,7 +487,7 @@ const TMSSplashScreen: React.FC = () => {
         }
         return prev + Math.random() * 15 + 5; 
       });
-    }, 100); 
+    }, 200); 
 
     return () => clearInterval(timer);
   }, []);
