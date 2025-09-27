@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { PlusCircle, CalendarPlus, Bot } from "lucide-react";
+import { PlusCircle, Bot } from "lucide-react";
 import StatCard from "@/components/dashboard/stat-card";
 import { stats } from "@/lib/data";
 import TasksByStatusChart from "@/components/dashboard/tasks-by-status-chart";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProjectProgressChart from "@/components/dashboard/project-progress-chart";
 import UpcomingMeetings from "@/components/dashboard/upcoming-meetings";
 import HighPriorityTasks from "@/components/dashboard/high-priority-tasks";
+import ScheduleMeetingDialog from "@/components/dashboard/schedule-meeting-dialog";
 
 export default function DashboardPage() {
   return (
@@ -23,10 +24,7 @@ export default function DashboardPage() {
             <PlusCircle />
             <span>Create Task</span>
           </Button>
-          <Button variant="outline">
-            <CalendarPlus />
-            <span>Schedule Meeting</span>
-          </Button>
+          <ScheduleMeetingDialog />
           <Button variant="outline">
             <Bot />
             <span>Start MOM</span>
