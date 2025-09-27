@@ -483,9 +483,9 @@ const TMSSplashScreen: React.FC = () => {
           setCurrentPhase('complete');
           return 100;
         }
-        return prev + Math.random() * 3 + 1;
+        return prev + Math.random() * 10 + 5; // Increased speed
       });
-    }, 150);
+    }, 100); // Faster interval
 
     return () => clearInterval(timer);
   }, []);
@@ -494,7 +494,7 @@ const TMSSplashScreen: React.FC = () => {
     if (currentPhase === 'complete') {
       const timer = setTimeout(() => {
         setCurrentPhase('transition');
-      }, 1000);
+      }, 500); // Faster transition start
       return () => clearTimeout(timer);
     }
     if (currentPhase === 'transition') {
