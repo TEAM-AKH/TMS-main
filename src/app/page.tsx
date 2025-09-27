@@ -282,7 +282,7 @@ const WeaveSpinner: React.FC = () => {
 
 const TMSSplashScreen: React.FC = () => {
   const [progress, setProgress] = useState(0);
-  const [currentPhase, setCurrentPhase] = useState<'loading' | 'complete' | 'transition'>('loading');
+  const [currentPhase, setCurrentPhase] = useState<'loading' | 'complete'>('loading');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [particles, setParticles] = useState<Particle[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -493,25 +493,13 @@ const TMSSplashScreen: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    let transitionTimer: NodeJS.Timeout;
-    let redirectTimer: NodeJS.Timeout;
-    
     if (currentPhase === 'complete') {
-      transitionTimer = setTimeout(() => {
-        setCurrentPhase('transition');
-      }, 500); 
-    }
-    
-    if (currentPhase === 'transition') {
-      redirectTimer = setTimeout(() => {
-          router.push('/login');
-      }, 1000); 
-    }
+        const redirectTimer = setTimeout(() => {
+            router.push('/login');
+        }, 500); // A brief delay for the "complete" state to be visible
 
-    return () => {
-      clearTimeout(transitionTimer);
-      clearTimeout(redirectTimer);
-    };
+        return () => clearTimeout(redirectTimer);
+    }
   }, [currentPhase, router]);
 
 
@@ -828,31 +816,8 @@ const TMSSplashScreen: React.FC = () => {
           </AnimatePresence>
         </motion.div>
       </div>
-
-      {/* Transition Overlay */}
-      <AnimatePresence>
-        {currentPhase === 'transition' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-center text-white"
-            >
-              <h2 className="text-3xl font-bold mb-4">Welcome!</h2>
-              <p className="text-lg opacity-90">Redirecting to your dashboard...</p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
 
 export default TMSSplashScreen;
-    
-    
