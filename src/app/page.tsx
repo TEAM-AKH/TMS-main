@@ -17,10 +17,17 @@ interface Dot {
     currentRadius: number;
 }
 
+interface Particle {
+  id: number;
+  left: string;
+  top: string;
+}
+
 const TMSSplashScreen: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState<'loading' | 'complete' | 'transition'>('loading');
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [particles, setParticles] = useState<Particle[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameId = useRef<number | null>(null);
   const dotsRef = useRef<Dot[]>([]);
@@ -182,8 +189,15 @@ const TMSSplashScreen: React.FC = () => {
   }, [GRID_CELL_SIZE, INTERACTION_RADIUS_SQ, OPACITY_BOOST, RADIUS_BOOST, BASE_OPACITY_MIN, BASE_OPACITY_MAX, BASE_RADIUS, INTERACTION_RADIUS]);
 
   useEffect(() => {
+    setParticles(
+      Array.from({ length: 12 }).map((_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+      }))
+    );
+
     handleResize();
-    const canvasElement = canvasRef.current;
     const handleMouseLeave = () => {
       mousePositionRef.current = { x: null, y: null };
     };
@@ -259,13 +273,13 @@ const TMSSplashScreen: React.FC = () => {
       />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
+        {particles.map((particle) => (
           <motion.div
-            key={i}
+            key={particle.id}
             className={`absolute w-1 h-1 ${isDarkMode ? 'bg-blue-400' : 'bg-purple-500'} rounded-full`}
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: particle.left,
+              top: particle.top,
             }}
             animate={{
               y: [-20, -40, -20],
