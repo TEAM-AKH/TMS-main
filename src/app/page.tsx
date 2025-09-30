@@ -280,11 +280,12 @@ interface Particle {
   top: string;
 }
 
-const TMSSplashScreen: React.FC = () => {
+  const TMSSplashScreen: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState<'loading' | 'complete'>('loading');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [isClicked, setIsClicked] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameId = useRef<number | null>(null);
   const dotsRef = useRef<Dot[]>([]);
@@ -292,8 +293,6 @@ const TMSSplashScreen: React.FC = () => {
   const canvasSizeRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 });
   const mousePositionRef = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
   const router = useRouter();
-
-
   const DOT_SPACING = 30;
   const BASE_OPACITY_MIN = 0.2;
   const BASE_OPACITY_MAX = 0.4;
@@ -446,6 +445,36 @@ const TMSSplashScreen: React.FC = () => {
     animationFrameId.current = requestAnimationFrame(animateDots);
   }, [GRID_CELL_SIZE, INTERACTION_RADIUS, INTERACTION_RADIUS_SQ, OPACITY_BOOST, RADIUS_BOOST, BASE_OPACITY_MIN, BASE_OPACITY_MAX, BASE_RADIUS]);
 
+  // Handle screen click to progress
+  const handleScreenClick = useCallback(() => {
+    if (currentPhase === 'loading' && !isClicked) {
+      setIsClicked(true);
+      // Animate progress to 100% over 1 second
+      const startProgress = progress;
+      const startTime = performance.now();
+      const duration = 1000; // 1 second
+      
+      const animateProgress = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progressPercent = Math.min(elapsed / duration, 1);
+        const newProgress = startProgress + (100 - startProgress) * progressPercent;
+        
+        setProgress(newProgress);
+        
+        if (progressPercent < 1) {
+          requestAnimationFrame(animateProgress);
+        } else {
+          setProgress(100);
+          setCurrentPhase('complete');
+        }
+      };
+      
+      requestAnimationFrame(animateProgress);
+    } else if (currentPhase === 'complete') {
+      router.push('/login');
+    }
+  }, [progress, currentPhase, isClicked, router]);
+
   useEffect(() => {
     // Generate particles only on the client side to prevent hydration mismatch
     setParticles(
@@ -478,21 +507,6 @@ const TMSSplashScreen: React.FC = () => {
   }, [handleResize, handleMouseMove, animateDots]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          setCurrentPhase('complete');
-          return 100;
-        }
-        return prev + Math.random() * 15 + 5; 
-      });
-    }, 200); 
-
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
     if (currentPhase === 'complete') {
         const redirectTimer = setTimeout(() => {
             router.push('/login');
@@ -502,7 +516,6 @@ const TMSSplashScreen: React.FC = () => {
     }
   }, [currentPhase, router]);
 
-
   const gradientClasses = isDarkMode 
     ? 'from-slate-900 via-blue-900 to-purple-900'
     : 'from-blue-50 via-purple-50 to-pink-50';
@@ -510,22 +523,28 @@ const TMSSplashScreen: React.FC = () => {
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const accentColor = isDarkMode ? 'text-blue-400' : 'text-purple-600';
 
+  // --- BEGIN: Info Card Modal Feature ---
+  const [showInfo, setShowInfo] = useState(false);
+
   return (
-    <div className={`relative min-h-screen w-full overflow-hidden bg-gradient-to-br ${gradientClasses}`}>
+    <div
+      className={`relative min-h-screen w-full overflow-hidden bg-gradient-to-br ${gradientClasses} cursor-pointer`}
+      onClick={handleScreenClick}
+    >
       <WeaveSpinner />
-      
+
       {/* Interactive Dot Background */}
-      <canvas 
-        ref={canvasRef} 
-        className="absolute inset-0 z-0 pointer-events-none opacity-60" 
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 z-0 pointer-events-none opacity-60"
       />
 
       {/* Background Pattern */}
-      <BGPattern 
-        variant="dots" 
-        mask="fade-center" 
-        size={32} 
-        fill={isDarkMode ? 'rgba(79, 172, 254, 0.1)' : 'rgba(139, 92, 246, 0.1)'} 
+      <BGPattern
+        variant="dots"
+        mask="fade-center"
+        size={32}
+        fill={isDarkMode ? 'rgba(79, 172, 254, 0.1)' : 'rgba(139, 92, 246, 0.1)'}
         className="opacity-30"
       />
 
@@ -577,7 +596,10 @@ const TMSSplashScreen: React.FC = () => {
 
       {/* Theme Toggle */}
       <motion.button
-        onClick={() => setIsDarkMode(!isDarkMode)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsDarkMode(!isDarkMode);
+        }}
         className="absolute top-6 right-6 z-20 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -593,62 +615,110 @@ const TMSSplashScreen: React.FC = () => {
         )}
       </motion.button>
 
-      {/* Main Content */}
+      {/* Info Card Icon (top left) */}
+      <motion.button
+        onClick={e => {
+          e.stopPropagation();
+          setShowInfo(true);
+        }}
+        className="absolute top-6 left-6 z-20 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        aria-label="Show project info"
+      >
+        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12" y2="8" />
+        </svg>
+      </motion.button>
+
+      {/* Info Card Modal */}
+      <AnimatePresence>
+        {showInfo && (
+          <motion.div
+            className={`fixed inset-0 z-50 flex items-center justify-center ${isDarkMode 
+              ? 'bg-black/60 backdrop-blur-md' 
+              : 'bg-purple-900/40 backdrop-blur-md'
+            }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowInfo(false)}
+          >
+            <motion.div
+              className={`${isDarkMode 
+                ? 'bg-gradient-to-br from-slate-800/95 via-blue-900/95 to-purple-900/95 border border-blue-500/20' 
+                : 'bg-gradient-to-br from-blue-50/95 via-purple-50/95 to-pink-50/95 border border-purple-200/30'
+              } backdrop-blur-xl rounded-xl shadow-2xl p-8 max-w-md w-full relative`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                className={`absolute top-3 right-3 ${isDarkMode 
+                  ? 'text-blue-300/70 hover:text-blue-200' 
+                  : 'text-purple-500/70 hover:text-purple-700'
+                } transition-colors duration-200`}
+                onClick={() => setShowInfo(false)}
+                aria-label="Close info"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+              <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-blue-300' : 'text-purple-600'}`}>
+                TMS - Team Management System
+              </h2>
+              <div className="space-y-3">
+                <p className={`${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                  <span className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-purple-600'}`}>Version:</span> 1.0.0
+                </p>
+          
+                <p className={`${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                  <span className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-purple-600'}`}>Features:</span>Seamless collaboration, efficient task management, and real-time progress tracking. Integrated with AI-powered voice recognition, it enables teams to create, update, and manage tasks effortlessly through natural voice commands, reducing manual effort and enhancing productivity.
+                </p>
+              </div>
+              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-6 pt-4 border-t ${isDarkMode ? 'border-blue-500/20' : 'border-purple-200/50'}`}>
+                &copy; 2025 TMS. All rights reserved.
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content - Fixed */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
-        
         {/* Logo Animation */}
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mb-8 w-40 h-40"
+          className="mb-1 w-40 h-40"
+          style={{
+            animation: 'logoGlow 3s ease-in-out infinite, logoScale 3s ease-in-out infinite',
+          }}
         >
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                  <filter id="grainy" x="0" y="0" width="100%" height="100%">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-                      <feComposite operator="in" in2="SourceGraphic" />
-                  </filter>
-                  <path id="top-curve" d="M 50 100 A 50 50 0 0 1 150 100" />
-                  <path id="bottom-curve" d="M 50 100 A 50 50 0 0 0 150 100" />
-              </defs>
-              
-              <g filter="url(#grainy)" opacity="0.8">
-                  <circle cx="100" cy="100" r="100" fill="#4B0082" />
-                  <circle cx="100" cy="100" r="85" fill="#f0e6f2" /> 
-                  <path d="M18.8,123.4 A90 90 0 0 1 181.2 123.4" fill="none" stroke="#B8860B" strokeWidth="8" />
-                  <circle cx="100" cy="100" r="90" fill="none" stroke="#403068" strokeWidth="6" />
-              </g>
-
-              <text fill="#4B0082" fontSize="18" fontWeight="bold" letterSpacing="1">
-                  <textPath href="#top-curve" startOffset="50%" textAnchor="middle">
-                      TEAM MANAGEMENT SYSTEM
-                  </textPath>
-              </text>
-
-              <g transform="translate(100, 100)">
-                  <text y="-5" textAnchor="middle" fontSize="40" fontWeight="bold" fill="#B8860B">T</text>
-                  <text x="-18" y="30" textAnchor="middle" fontSize="60" fontWeight="bold" fill="#6A5ACD" stroke="#fff" strokeWidth="1">M</text>
-                  <text x="18" y="30" textAnchor="middle" fontSize="60" fontWeight="bold" fill="#fff" stroke="#4B0082" strokeWidth="1">S</text>
-              </g>
-
-              <text fill="#4B0082" fontSize="24" fontWeight="bold" letterSpacing="4">
-                  <textPath href="#bottom-curve" startOffset="50%" textAnchor="middle">
-                      AKH
-                  </textPath>
-              </text>
-          </svg>
+          <Image
+            src="/logo.svg"
+            alt="TMS Logo - Team Management System"
+            width={360}
+            height={60}
+            className="object-contain"
+            priority
+          />
         </motion.div>
-
 
         {/* Welcome Text */}
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-center mb-8"
+          className="text-center mb-1"
         >
-          <h1 className={`text-4xl md:text-6xl font-light ${textColor} mb-4`}>
+          <h1 className={`text-4xl md:text-6xl font-light ${textColor} mb-1`}>
             Welcome to{' '}
             <span className={`font-bold ${accentColor}`}>TMS</span>
           </h1>
@@ -657,62 +727,36 @@ const TMSSplashScreen: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Loading Progress */}
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="w-full max-w-md"
-        >
-          <div className={`relative h-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} rounded-full overflow-hidden mb-4`}>
-            <motion.div
-              className={`absolute top-0 left-0 h-full ${isDarkMode ? 'bg-gradient-to-r from-blue-400 to-purple-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'} rounded-full`}
-              initial={{ width: '0%' }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              style={{
-                boxShadow: `0 0 10px ${isDarkMode ? 'rgba(79, 172, 254, 0.5)' : 'rgba(139, 92, 246, 0.5)'}`,
-              }}
-            />
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {currentPhase === 'loading' ? 'Loading...' : 'Complete!'}
-            </span>
-            <span className={`text-sm font-mono ${accentColor}`}>
-              {Math.round(progress)}%
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Loading Spinner */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.9 }}
-          className="mt-8"
-        >
-          <div className="spinner-wrapper">
-            <div className="spinner-container">
-              <div className="thread t1" />
-              <div className="thread t2" />
-              <div className="thread t3" />
-              <div className="thread t4" />
-              <div className="node" />
-            </div>
-          </div>
-        </motion.div>
-
         {/* Status Text */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.2 }}
-          className="mt-6 text-center"
+          className="mt-1 text-center"
         >
           <AnimatePresence mode="wait">
-            {currentPhase === 'loading' && (
+            {currentPhase === 'loading' && !isClicked && (
+              <motion.div
+                key="click-to-continue"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-2"
+              >
+                <div className="flex justify-center mt-40">
+                  <Image
+                    src="/akh.png"
+                    alt="AKH Logo"
+                    width={100}
+                    height={40}
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+      
+              </motion.div>
+            )}
+            {currentPhase === 'loading' && isClicked && (
               <motion.p
                 key="loading"
                 initial={{ opacity: 0, y: 10 }}
@@ -720,25 +764,35 @@ const TMSSplashScreen: React.FC = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
               >
-                Initializing your workspace...
+                s
               </motion.p>
             )}
             {currentPhase === 'complete' && (
-              <motion.p
+              <motion.div
                 key="complete"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className={`text-sm ${accentColor} font-medium`}
+                className="space-y-2"
               >
-                Ready to manage your team!
-              </motion.p>
+                <p className={`text-sm ${accentColor} font-medium`}>
+                  Ready to manage your team!
+                </p>
+                <motion.div
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                >
+                  Click to continue →
+                </motion.div>
+              </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
       </div>
     </div>
   );
+  // --- END: Info Card Modal Feature ---
 };
 
 export default TMSSplashScreen;
